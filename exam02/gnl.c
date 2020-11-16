@@ -153,7 +153,7 @@ int		divide_dup(char **line, char **remain)
 #include <stdio.h>
 int		main(int argc, char **argv)
 {
-	int		fd = open(argv[1], O_RDONLY);
+	int		fd = 0;
 	int		val;
 	char	*line;
 	int		ct = 1;
