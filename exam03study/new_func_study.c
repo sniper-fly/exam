@@ -14,6 +14,7 @@ int		main(void)
 		perror("Error:");
 		return (-1);
 	}
+	// できるだけ原文のフォーマットに近い形にする
 	while ((ret = fscanf(fp, "%d %d %c\n", &width, &height, &background)) != EOF)
 	{
 		printf("width = %d\n", width);
