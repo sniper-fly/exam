@@ -3,19 +3,21 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+void	clean_malloc_and_fp(char *canvas, FILE *fp);
 int		is_dicimal(double num);
 int		should_draw(char mode, int i, double x, double y, double width, double height, int c_wid);
 void	ft_putstr_fd(int fd, char *str);
 void	ft_putchar_fd(int fd, char ch);
 void	print_canvas(int width, int height, char *canvas);
-void	draw_canvas_art(FILE *fp, int c_wid, int c_hei, char *canvas);
+int		draw_canvas_art(FILE *fp, int c_wid, int c_hei, char *canvas);
 void	draw_canvas_bg(int width, int height, char *canvas, char bg_ch);
-void	draw_each_art(int c_wid, int c_hei, char *canvas,
+int		draw_each_art(int c_wid, int c_hei, char *canvas,
 		char mode, double x, double y, double width, double height, char paint_ch);
 
 #define ERROR -1
 #define TRUE 1
 #define FALSE 0
+#define SUCCESS 1
 
 void	ft_putstr_fd(int fd, char *str)
 {
@@ -61,10 +63,14 @@ int		main(int argc, char **argv)
 		return (ERROR);
 	}
 	draw_canvas_bg(width, height, canvas, bg_ch);
-	draw_canvas_art(fp, width, height, canvas);
+	if (draw_canvas_art(fp, width, height, canvas) == ERROR)
+	{
+		ft_putstr_fd(STDERR_FILENO, "Error: format\n");
+		clean_malloc_and_fp(canvas, fp);
+		return (ERROR);
+	}
 	print_canvas(width, height, canvas);
-	//free
-	//close file
+	clean_malloc_and_fp(canvas, fp);
 }
 
 void	draw_canvas_bg(int width, int height, char *canvas, char bg_ch)
@@ -73,28 +79,38 @@ void	draw_canvas_bg(int width, int height, char *canvas, char bg_ch)
 		canvas[i] = bg_ch;
 }
 
-void	draw_canvas_art(FILE *fp, int c_wid, int c_hei, char *canvas)
+int		draw_canvas_art(FILE *fp, int c_wid, int c_hei, char *canvas)
 {
 	int	value_num;
 	double	x, y, width, height;
 	char	mode;
 	char	paint_ch;
+	int		result;
 
 	while ((value_num = fscanf(fp, "%c %lf %lf %lf %lf %c\n",
 		&mode, &x, &y, &width, &height, &paint_ch)) == 6)
 	{
-		draw_each_art(c_wid, c_hei, canvas, mode, x, y, width, height, paint_ch);
+		result = draw_each_art(c_wid, c_hei, canvas, mode, x, y, width, height, paint_ch);
+		if (result == ERROR)
+			return (ERROR);
 	}
+	return (SUCCESS);
 }
 
-void	draw_each_art(int c_wid, int c_hei, char *canvas,
+int		draw_each_art(int c_wid, int c_hei, char *canvas,
 		char mode, double x, double y, double width, double height, char paint_ch)
 {
+	int	result;
+
 	for (int i = 0; i < c_wid * c_hei; i++)
 	{
-		if (should_draw(mode, i, x, y, width, height, c_wid))
+		result = should_draw(mode, i, x, y, width, height, c_wid);
+		if (result == ERROR)
+			return (ERROR);
+		else if (result == TRUE)
 			canvas[i] = paint_ch;
 	}
+	return (SUCCESS);
 }
 
 int		should_draw(char mode, int i, double x, double y, double width, double height, int c_wid)
@@ -120,7 +136,7 @@ int		should_draw(char mode, int i, double x, double y, double width, double heig
 	}
 	else
 	{
-		return (FALSE);
+		return (ERROR);
 	}
 }
 
@@ -147,4 +163,10 @@ void	print_canvas(int width, int height, char *canvas)
 void	ft_putchar_fd(int fd, char ch)
 {
 	write(fd, &ch, 1);
+}
+
+void	clean_malloc_and_fp(char *canvas, FILE *fp)
+{
+	free(canvas);
+	fclose(fp);
 }
