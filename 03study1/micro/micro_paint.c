@@ -124,6 +124,9 @@ int		draw_circles(char *canvas, t_bg *bg, FILE *fp)
 	&rect.type, &rect.x, &rect.y, &rect.width, &rect.height, &rect.paint);
 	if (info_num != 6)
 		return (ERROR);
+	//TODO: width, height <= 0のエラー処理
+	if (rect.width <= 0 || rect.height <= 0)
+		return (ERROR);
 	while (info_num == 6)
 	{
 		int retval = draw_each_circle(canvas, bg, &rect);
@@ -131,6 +134,8 @@ int		draw_circles(char *canvas, t_bg *bg, FILE *fp)
 			return (ERROR);
 		info_num = fscanf(fp, "%c %f %f %f %f %c\n",
 		&rect.type, &rect.x, &rect.y, &rect.width, &rect.height, &rect.paint);
+		if (rect.width <= 0 || rect.height <= 0)
+			return (ERROR);
 	}
 	return (SUCCESS);
 }

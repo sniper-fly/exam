@@ -130,12 +130,16 @@ int		draw_circles(char *canvas, t_bg *bg, FILE *fp)
 		&circle.type, &circle.x, &circle.y, &circle.radius, &circle.paint);
 	if (info_num != 5)
 		return (ERROR);
+	if (circle.radius <= 0)
+		return (ERROR);
 	while (info_num == 5)
 	{
 		if (draw_each_circle(&circle, bg, canvas) == ERROR)
 			return (ERROR);
 		info_num = fscanf(fp, "%c %f %f %f %c\n",
 			&circle.type, &circle.x, &circle.y, &circle.radius, &circle.paint);
+		if (circle.radius <= 0)
+			return (ERROR);
 	}
 	return (SUCCESS);
 }
