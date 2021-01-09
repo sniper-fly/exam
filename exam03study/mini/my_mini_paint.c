@@ -99,7 +99,7 @@ void	print_canvas(char *canvas, t_bg *bg)
 	{
 		for (int j = 0; j < bg->width; j++)
 		{
-			ft_putchar_fd(canvas[i], STDOUT_FILENO);
+			ft_putchar_fd(canvas[i * bg->width + j], STDOUT_FILENO);
 		}
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	}
@@ -126,7 +126,7 @@ int		draw_each_circle(char *canvas, t_bg *bg, t_circle *circle)
 	{
 		if ((should_draw = check_format(circle, bg, i)) == ERROR)
 			return (ERROR);
-		else if (should_draw == TRUE)
+		else if (should_draw)
 			canvas[i] = circle->paint;
 	}
 	return (SUCCESS);
@@ -150,7 +150,7 @@ int		check_format(t_circle *circle, t_bg *bg, int i)
 	}
 	else if (circle->type == 'c')
 	{
-		return (is_in_circle && circle->radius - distance_from_center <= 1);
+		return (is_in_circle && circle->radius - distance_from_center < 1);
 	}
 	else
 		return (ERROR);
